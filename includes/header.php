@@ -14,6 +14,7 @@ $csrf_token = $_SESSION['csrf_token'];
 
 // --- Security Check ---
 $current_page = basename($_SERVER['PHP_SELF']);
+// List of public pages that don't require a login
 $public_pages = ['login.php', 'login_action.php'];
 
 // 1. Check if user is logged in at all

@@ -2,15 +2,12 @@
 require_once 'includes/header.php';
 
 // --- Authorization & Security Checks ---
-// 1. Ensure user is a Group admin
 if ($_SESSION['division'] !== 'Group') { 
     die("Access Denied."); 
 }
-// 2. Ensure the request is a POST
 if ($_SERVER['REQUEST_METHOD'] !== 'POST') { 
     die("Invalid request method."); 
 }
-// 3. Validate the CSRF token
 if (!isset($_POST['csrf_token']) || !hash_equals($_SESSION['csrf_token'], $_POST['csrf_token'])) { 
     die("CSRF validation failed."); 
 }
@@ -24,7 +21,6 @@ $is_update = !empty($user_id);
 
 // --- Validation ---
 if (empty($username) || empty($division) || (!$is_update && empty($password))) {
-    // If creating a new user, password is required. Otherwise, redirect with an error.
     header("Location: users.php?status=error");
     exit();
 }
@@ -55,12 +51,11 @@ try {
         header("Location: users.php?status=created");
     }
 } catch (PDOException $e) {
-    // Handle specific error for a duplicate username
     if ($e->getCode() == '23000') {
         die("Error: A user with that username already exists. Please go back and choose a different username.");
     } else {
-        // Handle all other database errors
-        die("Database error: " . $e->getMessage());
+        error_log("User action failed: " . $e->getMessage());
+        die("Database error. Please check the logs.");
     }
 }
 exit();

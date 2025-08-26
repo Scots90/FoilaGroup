@@ -1,11 +1,14 @@
 <?php
-// Include necessary files
-require_once 'includes/header.php'; // For session and DB connection
+// Include necessary files for session, security, and DB connection
+require_once 'includes/header.php';
 
-// 1. Check if the form was submitted via POST
+// 1. Security Checks
 if ($_SERVER["REQUEST_METHOD"] !== "POST") {
     header("Location: customers.php");
     exit();
+}
+if (!isset($_POST['csrf_token']) || !hash_equals($_SESSION['csrf_token'], $_POST['csrf_token'])) {
+    die("CSRF validation failed. Request rejected.");
 }
 
 // 2. Retrieve all form data from $_POST
@@ -25,8 +28,6 @@ $customer_email = trim($_POST['customer_email'] ?? '');
 
 // 3. Basic Server-Side Validation
 if (empty($customer_code) || empty($customer_name) || empty($customer_address_1) || empty($customer_division)) {
-    // Redirect back to the form with an error
-    // In a real app, you'd pass the error message back
     header("Location: customer_form.php?code=" . urlencode($original_code) . "&error=required");
     exit();
 }
@@ -77,14 +78,11 @@ try {
         exit();
     }
 } catch (PDOException $e) {
-    // Handle potential errors, like a duplicate customer code on create
-    if ($e->getCode() == '23000') { // '23000' is the SQLSTATE for an integrity constraint violation
-        // Redirect back to the form with a specific error for duplicate code
+    if ($e->getCode() == '23000') { // Integrity constraint violation (e.g., duplicate code)
         header("Location: customer_form.php?error=duplicate&code_val=" . urlencode($customer_code));
         exit();
     } else {
-        // For any other database error, redirect with a generic error message
-        // In production, you would log the error: error_log($e->getMessage());
+        error_log("Customer action failed: " . $e->getMessage());
         header("Location: customers.php?status=error");
         exit();
     }

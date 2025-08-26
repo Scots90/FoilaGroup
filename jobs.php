@@ -82,6 +82,7 @@ if (isset($_GET['status'])) {
         <select name="filter_status" id="filter_status" onchange="this.form.submit()" style="padding: 8px; border-radius: 5px; border: 1px solid #ddd;">
             <option value="" <?php if (empty($status_to_filter)) echo 'selected'; ?>>All Statuses</option>
             <option value="Booked" <?php if ($status_to_filter == 'Booked') echo 'selected'; ?>>Booked</option>
+            <option value="In Process" <?php if ($status_to_filter == 'In Process') echo 'selected'; ?>>In Process</option>
             <option value="Exported to TMS" <?php if ($status_to_filter == 'Exported to TMS') echo 'selected'; ?>>Exported to TMS</option>
         </select>
     </form>

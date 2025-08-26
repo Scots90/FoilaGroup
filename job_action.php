@@ -51,7 +51,6 @@ if (empty($customer_code) || empty($collection_address_1) || empty($delivery_add
     exit();
 }
 
-// Additional validation for dates
 if ($collection_date > $delivery_date) {
     $redirect_url = "job_form.php?error=date";
     if (!empty($job_id)) {
@@ -61,7 +60,7 @@ if ($collection_date > $delivery_date) {
     exit();
 }
 
-// Handle optional time slot field: if type is not 'Time Slot', nullify time 2
+// Handle optional time slot field
 if ($collection_time_type !== 'Time Slot') {
     $collection_time_2 = null;
 }
@@ -81,7 +80,6 @@ try {
         $check_stmt->execute([$job_id]);
         $current_status = $check_stmt->fetchColumn();
 
-        // If the current status is 'Exported to TMS', force it to stay that way.
         if ($current_status === 'Exported to TMS') {
             $status = 'Exported to TMS';
         }
@@ -138,7 +136,6 @@ try {
     exit();
 
 } catch (PDOException $e) {
-    // Handle potential errors
     error_log("Job action failed: " . $e->getMessage());
     header("Location: jobs.php?status=error");
     exit();

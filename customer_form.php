@@ -5,8 +5,6 @@ require_once 'includes/header.php';
 // --- Determine Mode: Create vs. Edit ---
 $is_update = false;
 $customer = [];
-$form_title = "Add New Customer";
-$submit_button_text = "Create Customer";
 $page_header = "Add Customer";
 
 // The list of available divisions
@@ -16,8 +14,6 @@ $divisions = ['Ipswich', 'London', 'Teesside', 'Group'];
 if (isset($_GET['code']) && !empty($_GET['code'])) {
     $is_update = true;
     $customer_code = $_GET['code'];
-    $form_title = "Edit Customer: " . htmlspecialchars($customer_code);
-    $submit_button_text = "Update Customer";
     $page_header = "Edit Customer";
 
     // Fetch existing customer data from the database
@@ -49,10 +45,6 @@ if (isset($_GET['error'])) {
     }
 }
 ?>
-<style>
-    .status-message { padding: 15px; margin-bottom: 20px; border-radius: var(--border-radius); border: 1px solid; }
-    .status-message.error { color: #721c24; background-color: #f8d7da; border-color: #f5c6cb; }
-</style>
 
 <div class="page-header">
     <h1><?php echo $page_header; ?></h1>
@@ -64,6 +56,7 @@ if (isset($_GET['error'])) {
 <div class="form-container">
     <form action="customer_action.php" method="POST">
         <input type="hidden" name="original_code" value="<?php echo htmlspecialchars($customer['customer_code'] ?? ''); ?>">
+        <input type="hidden" name="csrf_token" value="<?php echo $csrf_token; ?>">
 
         <div class="form-group">
             <label for="customer_code">Customer Code *</label>
@@ -80,13 +73,17 @@ if (isset($_GET['error'])) {
 
         <div class="form-group">
             <label for="customer_division">Division *</label>
-            <select id="customer_division" name="customer_division" required>
-                <?php foreach ($divisions as $division): ?>
-                    <option value="<?php echo $division; ?>" <?php echo (isset($customer['customer_division']) && $customer['customer_division'] == $division) ? 'selected' : ''; ?>>
-                        <?php echo $division; ?>
-                    </option>
-                <?php endforeach; ?>
-            </select>
+            <?php if ($_SESSION['division'] === 'Group'): ?>
+                <select id="customer_division" name="customer_division" required>
+                    <?php foreach ($divisions as $division): ?>
+                        <option value="<?php echo $division; ?>" <?php echo (isset($customer['customer_division']) && $customer['customer_division'] == $division) ? 'selected' : ''; ?>>
+                            <?php echo $division; ?>
+                        </option>
+                    <?php endforeach; ?>
+                </select>
+            <?php else: ?>
+                <input type="text" id="customer_division" name="customer_division" value="<?php echo htmlspecialchars($_SESSION['division']); ?>" readonly>
+            <?php endif; ?>
         </div>
 
         <div class="form-group">
@@ -137,7 +134,7 @@ if (isset($_GET['error'])) {
         </div>
 
         <div class="form-group">
-            <button type="submit" class="btn btn-primary"><?php echo $submit_button_text; ?></button>
+            <button type="submit" class="btn btn-primary"><?php echo $is_update ? 'Update Customer' : 'Create Customer'; ?></button>
         </div>
     </form>
 </div>

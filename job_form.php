@@ -279,7 +279,7 @@ document.addEventListener('DOMContentLoaded', function() {
     deliveryTimeType.addEventListener('change', () => toggleTime2Field(deliveryTimeType, deliveryTime2Group));
 
     // Run on page load to set the initial state
-    toggleTime2Field(collectionTimeType, collectionTime2Group);
+    toggleTime2Fiel(collectionTimeType, collectionTime2Group);
     toggleTime2Field(deliveryTimeType, deliveryTime2Group);
 });
 </script>
