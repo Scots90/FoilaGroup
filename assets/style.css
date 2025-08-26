@@ -1,0 +1,416 @@
+/* --- Google Font Import --- */
+@import url('https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700&display=swap');
+
+/* --- CSS Variables --- */
+:root {
+    --primary-color: #05bd64; /* New Green */
+    --dark-color: #2e4052;    /* New Dark Blue/Grey */
+    --light-color: #ffffff;
+    --grey-light: #f2f2f2;
+    --grey-medium: #dddddd;
+    --text-color: #333333;
+    --success-bg: #d4edda;
+    --success-border: #c3e6cb;
+    --success-text: #155724;
+    --error-bg: #f8d7da;
+    --error-border: #f5c6cb;
+    --error-text: #721c24;
+    --border-radius: 5px;
+}
+
+/* --- Global & Body Styles --- */
+* {
+    box-sizing: border-box;
+    margin: 0;
+    padding: 0;
+}
+
+body {
+    font-family: 'Poppins', sans-serif;
+    background-color: var(--grey-light);
+    color: var(--text-color);
+    line-height: 1.6;
+    min-height: 100vh; /* Make body at least full screen height */
+    display: grid; /* Use CSS Grid for overall page layout */
+    grid-template-rows: auto 1fr auto; /* Header, Main (stretches), Footer */
+}
+
+/* --- Main Layout & Navigation --- */
+.container {
+    max-width: 1200px;
+    margin: 20px auto;
+    padding: 0 20px;
+    width: 100%; /* Ensure container takes up available space */
+}
+
+.navbar {
+    background-color: var(--dark-color);
+    color: var(--light-color);
+    padding: 1rem 2rem;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    position: relative;
+    grid-row: 1 / 2; /* Assign navbar to the first grid row */
+}
+
+.navbar .logo img {
+    height: 120px;
+    width: auto;
+    display: block;
+}
+
+.navbar a {
+    color: var(--light-color);
+    text-decoration: none;
+    padding: 0.5rem 1rem;
+    transition: color 0.3s ease-in-out;
+}
+
+.navbar a:hover {
+    color: var(--primary-color);
+}
+
+.navbar .user-info {
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+}
+
+.hamburger {
+    display: none;
+}
+
+.navbar-collapse {
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+}
+
+.nav-links {
+    display: flex;
+    align-items: center;
+}
+
+/* --- Dashboard Stat Cards --- */
+.dashboard-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+    gap: 20px;
+    margin-top: 20px;
+}
+
+.stat-card {
+    background: var(--light-color);
+    padding: 25px;
+    border-radius: var(--border-radius);
+    box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+    text-align: center;
+}
+
+.stat-card h3 {
+    color: var(--text-color);
+    margin-bottom: 10px;
+    font-size: 1.1rem;
+}
+
+.stat-card p {
+    font-size: 2.5rem;
+    font-weight: 700;
+    color: var(--primary-color);
+}
+
+/* --- Tables --- */
+.content-table {
+    width: 100%;
+    border-collapse: collapse;
+    background: var(--light-color);
+    border-radius: var(--border-radius);
+    overflow: hidden;
+    box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+}
+
+.content-table thead tr {
+    background-color: var(--primary-color);
+    color: var(--light-color);
+    text-align: left;
+    font-weight: 600;
+}
+
+.content-table th, .content-table td {
+    padding: 12px 15px;
+}
+
+.content-table tbody tr {
+    border-bottom: 1px solid var(--grey-medium);
+}
+
+.content-table tbody tr:last-of-type {
+    border-bottom: 2px solid var(--primary-color);
+}
+
+.content-table tbody tr:nth-of-type(even) {
+    background-color: var(--grey-light);
+}
+
+/* --- Buttons & Actions --- */
+.btn {
+    display: inline-block;
+    padding: 10px 20px;
+    border-radius: var(--border-radius);
+    text-decoration: none;
+    color: var(--light-color);
+    border: none;
+    cursor: pointer;
+    font-weight: 500;
+    transition: background-color 0.3s ease;
+}
+
+.btn-primary {
+    background-color: var(--primary-color);
+}
+
+.btn-primary:hover {
+    background-color: #04a557; /* Darker shade of primary */
+}
+
+.btn-secondary {
+    background-color: #6c757d;
+}
+
+.btn-secondary:hover {
+    background-color: #5a6268;
+}
+
+.table-actions {
+    display: flex;
+    gap: 8px;
+    align-items: center;
+}
+
+.btn-action {
+    display: inline-block;
+    padding: 5px 12px;
+    border-radius: var(--border-radius);
+    text-decoration: none;
+    color: var(--light-color);
+    border: none;
+    cursor: pointer;
+    font-weight: 500;
+    font-size: 0.85em;
+    transition: opacity 0.2s ease;
+}
+
+.btn-action:hover {
+    opacity: 0.85;
+}
+
+.btn-edit {
+    background-color: #007bff;
+    text-decoration:none;
+    color:#fff;
+}
+
+.btn-delete {
+    background-color: #dc3545;
+}
+
+.page-header {
+    text-align: center;
+    margin-bottom: 20px;
+}
+
+.page-header h1 {
+    margin-bottom: 10px;
+}
+
+.page-header div {
+    display: flex;
+    gap: 10px;
+    justify-content: center;
+    flex-wrap: wrap; /* Allow buttons to wrap on smaller screens */
+}
+
+
+/* --- Forms --- */
+
+.form-container {
+    background: var(--light-color);
+    padding: 30px;
+    border-radius: var(--border-radius);
+    box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+    max-width: 900px;
+    margin: 20px auto;
+}
+
+.form-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 20px;
+}
+
+.full-width {
+    grid-column: 1 / -1;
+}
+
+.form-group {
+    margin-bottom: 15px;
+}
+
+.form-group label {
+    display: block;
+    margin-bottom: 5px;
+    font-weight: 600;
+}
+
+.form-group input, .form-group select, .form-group textarea {
+    width: 100%;
+    padding: 10px;
+    border: 1px solid var(--grey-medium);
+    border-radius: var(--border-radius);
+    font-family: 'Poppins', sans-serif;
+    font-size: 1rem;
+}
+
+.form-group hr {
+    margin: 20px 0;
+    border: 0;
+    border-top: 1px solid var(--grey-medium);
+}
+
+/* --- Status & Error Messages --- */
+.status-message {
+    padding: 15px;
+    margin-bottom: 20px;
+    border-radius: var(--border-radius);
+    border: 1px solid;
+}
+
+.status-message.success {
+    color: var(--success-text);
+    background-color: var(--success-bg);
+    border-color: var(--success-border);
+}
+
+.status-message.error {
+    color: var(--error-text);
+    background-color: var(--error-bg);
+    border-color: var(--error-border);
+}
+
+/* --- Footer --- */
+footer {
+    background-color: var(--dark-color);
+    text-align: center;
+    padding: 20px 0;
+    margin-top: 40px;
+    color: #fff;
+    border-top: 1px solid var(--grey-medium);
+    grid-row: 3 / 4; /* Assign footer to the third grid row */
+}
+
+footer .footer-logo img {
+    height: 50px;
+    width: auto;
+    margin-bottom: 15px;
+}
+
+/* ################################################### */
+/* --- Responsive Styles (for Mobile and Tablets) --- */
+/* ################################################### */
+@media (max-width: 768px) {
+
+    /* --- Navbar Responsiveness --- */
+    .navbar {
+        flex-wrap: wrap;
+    }
+
+    .hamburger {
+        display: block;
+        background: none;
+        border: none;
+        color: white;
+        font-size: 1.5rem;
+        cursor: pointer;
+    }
+
+    .navbar-collapse {
+        display: none;
+        width: 100%;
+        flex-direction: column;
+        align-items: flex-start;
+        margin-top: 10px;
+    }
+
+    .navbar-collapse.active {
+        display: flex;
+    }
+
+    .navbar .nav-links, .navbar .user-info {
+        flex-direction: column;
+        align-items: flex-start;
+        width: 100%;
+    }
+
+    .navbar .nav-links a, .navbar .user-info span {
+        padding: 10px 0;
+        width: 100%;
+        border-top: 1px solid #444;
+    }
+    
+    .navbar .user-info {
+        gap: 0;
+    }
+    
+    .navbar .user-info .btn {
+        margin-top: 10px;
+    }
+
+    /* --- Form Responsiveness --- */
+    .form-grid {
+        grid-template-columns: 1fr;
+    }
+
+    /* --- Table Responsiveness --- */
+    .content-table thead {
+        display: none;
+    }
+
+    .content-table, .content-table tbody, .content-table tr, .content-table td {
+        display: block;
+        width: 100%;
+    }
+
+    .content-table tr {
+        margin-bottom: 15px;
+        border: 1px solid var(--grey-medium);
+        border-radius: var(--border-radius);
+    }
+    
+    .content-table tr:last-of-type {
+        margin-bottom: 0;
+    }
+
+    .content-table td {
+        text-align: right;
+        padding-left: 50%;
+        position: relative;
+        border: none;
+        border-bottom: 1px solid var(--grey-light);
+    }
+    
+    .content-table td:last-child {
+        border-bottom: none;
+    }
+
+    .content-table td::before {
+        content: attr(data-label);
+        position: absolute;
+        left: 15px;
+        width: 45%;
+        padding-right: 10px;
+        white-space: nowrap;
+        text-align: left;
+        font-weight: bold;
+    }
+}
