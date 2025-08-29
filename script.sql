@@ -72,6 +72,16 @@ CREATE TABLE `jobs` (
   CONSTRAINT `jobs_ibfk_1` FOREIGN KEY (`customer_code`) REFERENCES `customers` (`customer_code`) ON DELETE RESTRICT
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
 
+-- User out of hours login attempts
+
+CREATE TABLE `login_attempts` (
+  `id` int(11) NOT NULL AUTO_INCREMENT,
+  `username` varchar(255) NOT NULL,
+  `attempt_time` datetime NOT NULL,
+  `status` varchar(100) NOT NULL,
+  PRIMARY KEY (`id`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
+
 --
 -- Dumping data for table `users`
 -- The password for the user 'FionaSuleman' is: FionaS$10

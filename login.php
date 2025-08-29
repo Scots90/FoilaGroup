@@ -16,6 +16,9 @@ if (isset($_GET['error'])) {
     if ($_GET['error'] == 'session') {
         $message = '<div class="status-message error">Your session was invalid. Please log in again.</div>';
     }
+    if ($_GET['error'] == 'outofhours') {
+        $message = '<div class="status-message error">Access denied. Login is only permitted between 7:30 AM and 5:30 PM.</div>';
+    }
 }
 ?>
 <!DOCTYPE html>

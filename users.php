@@ -8,13 +8,18 @@ if ($_SESSION['division'] !== 'Group') {
     exit();
 }
 
-// Fetch all users from the database (except their password hashes)
+// Fetch all users and recent login attempts
 try {
-    $sql = "SELECT id, username, division FROM users ORDER BY username ASC";
-    $stmt = $pdo->query($sql);
-    $users = $stmt->fetchAll(PDO::FETCH_ASSOC);
+    $sql_users = "SELECT id, username, division FROM users ORDER BY username ASC";
+    $stmt_users = $pdo->query($sql_users);
+    $users = $stmt_users->fetchAll(PDO::FETCH_ASSOC);
+
+    $sql_attempts = "SELECT username, attempt_time, status, ip_address, location FROM login_attempts ORDER BY attempt_time DESC LIMIT 50";
+    $stmt_attempts = $pdo->query($sql_attempts);
+    $login_attempts = $stmt_attempts->fetchAll(PDO::FETCH_ASSOC);
+
 } catch (PDOException $e) {
-    die("Could not retrieve users from the database: " . $e->getMessage());
+    die("Could not retrieve data from the database: " . $e->getMessage());
 }
 
 // Check for status messages
@@ -75,6 +80,40 @@ if (isset($_GET['status'])) {
                     </td>
                 </tr>
             <?php endforeach; ?>
+        </tbody>
+    </table>
+</div>
+
+<div class="page-header" style="margin-top: 40px;">
+    <h2>Recent Failed Login Attempts</h2>
+</div>
+<div class="table-container">
+    <table class="content-table">
+        <thead>
+            <tr>
+                <th>Username Attempted</th>
+                <th>Time of Attempt</th>
+                <th>Reason</th>
+                <th>IP Address</th>
+                <th>Approx. Location</th>
+            </tr>
+        </thead>
+        <tbody>
+            <?php if (empty($login_attempts)): ?>
+                <tr>
+                    <td colspan="5" style="text-align: center;">No failed login attempts recorded.</td>
+                </tr>
+            <?php else: ?>
+                <?php foreach ($login_attempts as $attempt): ?>
+                    <tr>
+                        <td data-label="Username"><?php echo htmlspecialchars($attempt['username']); ?></td>
+                        <td data-label="Time"><?php echo date('d-m-Y H:i:s', strtotime($attempt['attempt_time'])); ?></td>
+                        <td data-label="Reason"><?php echo htmlspecialchars($attempt['status']); ?></td>
+                        <td data-label="IP Address"><?php echo htmlspecialchars($attempt['ip_address']); ?></td>
+                        <td data-label="Location"><?php echo htmlspecialchars($attempt['location']); ?></td>
+                    </tr>
+                <?php endforeach; ?>
+            <?php endif; ?>
         </tbody>
     </table>
 </div>
