@@ -79,6 +79,8 @@ CREATE TABLE `login_attempts` (
   `username` varchar(255) NOT NULL,
   `attempt_time` datetime NOT NULL,
   `status` varchar(100) NOT NULL,
+  `ip_address` varchar(45) DEFAULT NULL,
+  `location` varchar(255) DEFAULT NULL,
   PRIMARY KEY (`id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
 
