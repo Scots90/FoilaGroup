@@ -38,7 +38,7 @@ try {
     // --- 4. Time-Based Login Restriction ---
     if ($user && $user['division'] !== 'Group') {
         $currentTime = date('H:i');
-        if ($currentTime < '07:30' || $currentTime > '10:30') { 
+        if ($currentTime < '07:30' || $currentTime > '17:00') { 
             $location = getLocationFromIp($ip_address);
             $log_sql = "INSERT INTO login_attempts (username, attempt_time, status, ip_address, location) VALUES (?, NOW(), 'Out of hours', ?, ?)";
             $log_stmt = $pdo->prepare($log_sql);
