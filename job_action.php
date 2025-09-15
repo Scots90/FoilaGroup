@@ -47,11 +47,13 @@ $notes = trim($_POST['notes'] ?? '');
 
 // 3. Server-Side Validation
 if (empty($customer_code) || empty($collection_address_1) || empty($delivery_address_1) || empty($goods_description)) {
+    $_SESSION['old_form_data'] = $_POST;
     header("Location: job_form.php?id=" . urlencode($job_id) . "&error=required");
     exit();
 }
 
 if ($collection_date > $delivery_date) {
+    $_SESSION['old_form_data'] = $_POST;
     $redirect_url = "job_form.php?error=date";
     if (!empty($job_id)) {
         $redirect_url .= "&id=" . urlencode($job_id);

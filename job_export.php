@@ -1,10 +1,10 @@
 <?php
+// Start the session to get user info, but do not output any HTML
 session_start();
 require_once 'includes/db_connect.php';
 
 /**
  * Custom CSV writing function to force CRLF (\r\n) line endings.
- * This is required by the target system's import settings.
  */
 function fputcsv_crlf($handle, array $fields, $delimiter = ',', $enclosure = '"') {
     $data = '';
@@ -14,7 +14,6 @@ function fputcsv_crlf($handle, array $fields, $delimiter = ',', $enclosure = '"'
             $data .= $delimiter;
         }
         $field = (string) $field;
-        // Enclose field in double quotes if it contains the delimiter, enclosure, or a newline
         if (preg_match('/[",\r\n]/', $field)) {
             $field = $enclosure . str_replace($enclosure, $enclosure . $enclosure, $field) . $enclosure;
         }
@@ -24,33 +23,43 @@ function fputcsv_crlf($handle, array $fields, $delimiter = ',', $enclosure = '"'
     fwrite($handle, $data . "\r\n"); // Force CRLF
 }
 
-
-// --- Security and Division Filtering ---
+// --- Security and Filtering ---
 if (!isset($_SESSION['user_id'])) {
     die("Access denied. You must be logged in to export data.");
 }
 
 $user_division = $_SESSION['division'];
 $params = [];
-$division_filter = "";
+$sql_where_clauses = [];
 
+// 1. Division Filtering
 if ($user_division !== 'Group') {
-    $division_filter = " WHERE c.customer_division = ? ";
+    $sql_where_clauses[] = "c.customer_division = ?";
     $params[] = $user_division;
 }
 
-// --- Fetch Data ---
+// 2. UPDATED: Status Filtering for 'Booked' jobs only
+$sql_where_clauses[] = "j.status = ?";
+$params[] = 'Booked';
+
+// --- Fetch Data from Database ---
 try {
     $sql = "SELECT j.*, c.customer_name, c.customer_division 
             FROM jobs j 
-            JOIN customers c ON j.customer_code = c.customer_code" 
-            . $division_filter . 
-            " ORDER BY j.delivery_date DESC";
+            JOIN customers c ON j.customer_code = c.customer_code";
+
+    if (!empty($sql_where_clauses)) {
+        $sql .= " WHERE " . implode(" AND ", $sql_where_clauses);
+    }
+
+    $sql .= " ORDER BY j.delivery_date DESC";
+            
     $stmt = $pdo->prepare($sql);
     $stmt->execute($params);
     $jobs_to_export = $stmt->fetchAll(PDO::FETCH_ASSOC);
+
 } catch (PDOException $e) {
-    die("Database error: " . $e->getMessage());
+    die("Database error: Could not retrieve data for export. " . $e->getMessage());
 }
 
 // --- Handle File Format ---
@@ -62,7 +71,7 @@ if ($format === 'txt') {
 } else {
     $filename = "jobs_" . date('Y-m-d') . ".csv";
     $content_type = 'text/csv; charset=utf-8';
-    $delimiter = ","; // Confirmed by settings: Field delimiter is Comma
+    $delimiter = ",";
 }
 
 // --- Set HTTP Headers for Download ---
@@ -71,7 +80,7 @@ header('Content-Disposition: attachment; filename="' . $filename . '"');
 
 // --- Generate File Output ---
 $output = fopen('php://output', 'w');
-fwrite($output, "\xEF\xBB\xBF"); // Add UTF-8 BOM for maximum compatibility
+fwrite($output, "\xEF\xBB\xBF");
 
 $header = [
     'Job ID', 'Customer Code', 'Customer Name', 'Order Number', 'Second Reference', 'Third Reference',
@@ -79,9 +88,8 @@ $header = [
     'Collection Date', 'Collection Time Type', 'Collection Time 1', 'Collection Time 2',
     'Delivery Address 1', 'Delivery Address 2', 'Delivery Address 3', 'Delivery Address 4', 'Delivery Postcode',
     'Delivery Date', 'Delivery Time Type', 'Delivery Time 1', 'Delivery Time 2',
-    'Goods Description', 'Status', 'Quantity', 'Weight', 'Volume', 'Job Value', 'Division'
+    'Goods Description', 'Status', 'Quantity', 'Weight', 'Volume', 'Job Value', 'Notes', 'Division'
 ];
-// Use the new custom function to write the header
 fputcsv_crlf($output, $header, $delimiter);
 
 foreach ($jobs_to_export as $row) {
@@ -95,13 +103,13 @@ foreach ($jobs_to_export as $row) {
         $row['delivery_postcode'], $row['delivery_date'], $row['delivery_time_type'], 
         $row['delivery_time_1'], $row['delivery_time_2'], $row['goods_description'], 
         $row['status'], $row['quantity'], $row['weight'], $row['volume'], $row['job_value'],
-        $row['customer_division']
+        $row['notes'], $row['customer_division']
     ];
-    // Use the new custom function to write the data row
     fputcsv_crlf($output, $csv_row, $delimiter);
 }
 
 fclose($output);
+
 
 // --- Update Status of Exported Jobs ---
 $job_ids = array_column($jobs_to_export, 'id');
