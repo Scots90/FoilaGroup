@@ -1,5 +1,4 @@
 <?php
-// Start the session to get user info, but do not output any HTML
 session_start();
 require_once 'includes/db_connect.php';
 
@@ -38,7 +37,7 @@ if ($user_division !== 'Group') {
     $params[] = $user_division;
 }
 
-// 2. UPDATED: Status Filtering for 'Booked' jobs only
+// 2. Status Filtering for 'Booked' jobs only
 $sql_where_clauses[] = "j.status = ?";
 $params[] = 'Booked';
 
@@ -97,10 +96,14 @@ foreach ($jobs_to_export as $row) {
         $row['id'], $row['customer_code'], $row['customer_name'], $row['order_number'], 
         $row['second_reference'], $row['third_reference'], $row['collection_address_1'], 
         $row['collection_address_2'], $row['collection_address_3'], $row['collection_address_4'], 
-        $row['collection_postcode'], $row['collection_date'], $row['collection_time_type'], 
+        $row['collection_postcode'], 
+        date('d/m/Y', strtotime($row['collection_date'])), // Format collection date
+        $row['collection_time_type'], 
         $row['collection_time_1'], $row['collection_time_2'], $row['delivery_address_1'], 
         $row['delivery_address_2'], $row['delivery_address_3'], $row['delivery_address_4'], 
-        $row['delivery_postcode'], $row['delivery_date'], $row['delivery_time_type'], 
+        $row['delivery_postcode'], 
+        date('d/m/Y', strtotime($row['delivery_date'])), // Format delivery date
+        $row['delivery_time_type'], 
         $row['delivery_time_1'], $row['delivery_time_2'], $row['goods_description'], 
         $row['status'], $row['quantity'], $row['weight'], $row['volume'], $row['job_value'],
         $row['notes'], $row['customer_division']

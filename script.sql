@@ -84,10 +84,8 @@ CREATE TABLE `login_attempts` (
   PRIMARY KEY (`id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
 
---
--- Dumping data for table `users`
--- The password for the user 'FionaSuleman' is: FionaS$10
---
-INSERT INTO `users` (`username`, `password_hash`, `division`) VALUES
-('FionaSuleman', '$2y$10$wTfH.N65vSgTzVn7.kH4gO.B5g3jT9X/L.cO1sF2aE7hG4kI8d.sO', 'Group');
+--Alters the customer table to cater for a new export to accounts status
+ALTER TABLE `customers`
+ADD COLUMN `xero_export_status` VARCHAR(20) NOT NULL DEFAULT 'Not Exported' AFTER `customer_email`;
+
 COMMIT;

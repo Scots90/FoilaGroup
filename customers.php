@@ -13,10 +13,10 @@ if ($user_division !== 'Group') {
     $params[] = $user_division;
 }
 
-// Fetch all customers from the database, applying the division filter
+// Fetch all customers from the database, including the new xero_export_status column
 try {
-    $sql = "SELECT customer_code, customer_name, customer_division, customer_contact_name, customer_telephone, customer_email 
-            FROM customers" . $division_filter . " ORDER BY customer_name ASC";
+    $sql = "SELECT customer_code, customer_name, customer_division, customer_contact_name, customer_email, xero_export_status 
+            FROM customers" . $division_filter . " ORDER BY xero_export_status ASC, customer_name ASC";
     $stmt = $pdo->prepare($sql);
     $stmt->execute($params);
     $customers = $stmt->fetchAll(PDO::FETCH_ASSOC);
@@ -49,6 +49,7 @@ if (isset($_GET['status'])) {
     <div>
         <?php // Only show export buttons to 'Group' users
         if ($_SESSION['division'] === 'Group'): ?>
+            <a href="customer_accounting_export.php" class="btn btn-secondary">Export to Xero</a>
             <a href="customer_export.php?format=csv" class="btn btn-secondary">Export as CSV</a>
             <a href="customer_export.php?format=txt" class="btn btn-secondary">Export as TXT</a>
         <?php endif; ?>
@@ -66,15 +67,14 @@ if (isset($_GET['status'])) {
                 <th>Name</th>
                 <th>Division</th>
                 <th>Contact</th>
-                <th>Telephone</th>
-                <th>Email</th>
+                <th>Xero Status</th>
                 <th>Actions</th>
             </tr>
         </thead>
         <tbody>
             <?php if (empty($customers)): ?>
                 <tr>
-                    <td colspan="7" style="text-align: center;">No customers found.</td>
+                    <td colspan="6" style="text-align: center;">No customers found.</td>
                 </tr>
             <?php else: ?>
                 <?php foreach ($customers as $customer): ?>
@@ -83,8 +83,7 @@ if (isset($_GET['status'])) {
                         <td data-label="Name"><?php echo htmlspecialchars($customer['customer_name']); ?></td>
                         <td data-label="Division"><?php echo htmlspecialchars($customer['customer_division']); ?></td>
                         <td data-label="Contact"><?php echo htmlspecialchars($customer['customer_contact_name']); ?></td>
-                        <td data-label="Telephone"><?php echo htmlspecialchars($customer['customer_telephone']); ?></td>
-                        <td data-label="Email"><?php echo htmlspecialchars($customer['customer_email']); ?></td>
+                        <td data-label="Xero Status"><?php echo htmlspecialchars($customer['xero_export_status']); ?></td>
                         <td data-label="Actions" class="table-actions">
                             <a href="customer_form.php?code=<?php echo urlencode($customer['customer_code']); ?>" class="btn-action btn-edit">Edit</a>
                             <form action="customer_delete.php" method="POST" style="display:inline;" onsubmit="return confirm('Are you sure you want to delete this customer?');">
